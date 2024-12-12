@@ -48,8 +48,9 @@ app.use(session({
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.post('/select-data-plan', (req, res) => {
-    const { dataPlan, recipientNumber } = req.body;
+
+app.get('/select-data-plan', (req, res) => {
+    const { dataPlan, recipientNumber } = req.query; 
 
     if (!dataPlan || !recipientNumber) {
         return res.status(400).json({ message: 'Data plan and recipient number are required.' });
@@ -67,6 +68,7 @@ app.post('/select-data-plan', (req, res) => {
     stmt.finalize();
 });
 
+
 app.get('/get-selected-plans', (req, res) => {
     db.all("SELECT * FROM plans", [], (err, rows) => {
         if (err) {
@@ -77,6 +79,7 @@ app.get('/get-selected-plans', (req, res) => {
         res.status(200).json(rows);
     });
 });
+
 
 app.get('/review-details', (req, res) => {
     db.get("SELECT * FROM plans ORDER BY id DESC LIMIT 1", [], (err, row) => {
@@ -95,6 +98,7 @@ app.get('/review-details', (req, res) => {
         });
     });
 });
+
 
 app.get('/log-all-plans', (req, res) => {
     console.log('Fetching all data plans...'); 
