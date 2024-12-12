@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Review Your Details</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
+
+        #review-container {
+            max-width: 400px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            margin-bottom: 20px;
+        }
+
+        .details {
+            text-align: left;
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #217dbb;
+        }
+    </style>
+</head>
+<body>
+    <div id="review-container">
+        <h2>Review Your Details</h2>
+        <div class="details">
+            <p><strong>Data Plan:</strong> <span id="plan-name"></span></p>
+            <p><strong>Recipient Number:</strong> <span id="recipient-number"></span></p>
+        </div>
+        <button id="confirm-button">Confirm and Proceed</button>
+    </div>
+
+    <script>
+        async function fetchDetails() {
+            try {
+                const response = await fetch("http://localhost:3000/review-details", {
+                    method: "GET",
+                    credentials: "include", 
+                });
+
+                if (!response.ok) {
+                    throw new Error("Failed to fetch details. Please start over.");
+                }
+
+                const data = await response.json();
+                document.getElementById("plan-name").textContent = data.dataPlan;
+                document.getElementById("recipient-number").textContent = data.recipientNumber;
+            } catch (error) {
+                alert(error.message);
+            }
+        }
+
+        document.getElementById("confirm-button").addEventListener("click", () => {
+            alert("Your data plan purchase is confirmed!");
+           
+            window.location.href = "index.html"; 
+        });
+
+       
+        fetchDetails();
+    </script>
+</body>
+</html>

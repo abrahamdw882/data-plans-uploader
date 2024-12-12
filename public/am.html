@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Plan Selector</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(90deg, #000000, #f5a623, #fbd14b, #f0b429, #000000);
+            text-align: center;
+            padding: 20px;
+        }
+
+        #plan-selector {
+            max-width: 400px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            text-align: left;
+        }
+
+        select, input, button {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #217dbb;
+        }
+
+        h6 {
+            color: black;
+            margin: 10px 0;
+        }
+
+        .warning {
+            background-color: #fff3cd;
+            border: 1px solid #ffeeba;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+
+        a {
+            background-color: red;
+            color: white;
+            padding: 5px 10px;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+
+        a:hover {
+            background-color: darkred;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="plan-selector">
+        <h2>Select Your MTN Data Plan</h2>
+        <form id="data-plan-form">
+            <label for="data-plan">Choose your data plan:</label>
+            <select id="data-plan" name="data-plan" required>
+                <option value="" disabled selected>Select a plan</option>
+                <option value="1GB">1GB - valid for 60 days</option>
+                <option value="2GB">2GB - valid for 60 days</option>
+                <option value="3GB">3GB - valid for 60 days</option>
+                <option value="4GB">4GB - valid for 60 days</option>
+                <option value="5GB">5GB - valid for 60 days</option>
+                <option value="6GB">6GB - valid for 60 days</option>
+                <option value="8GB">8GB - valid for 60 days</option>
+                <option value="10GB">10GB - valid for 60 days</option>
+                <option value="15GB">15GB - valid for 60 days</option>
+                <option value="20GB">20GB - valid for 60 days</option>
+                <option value="25GB">25GB - valid for 60 days</option>
+            </select>
+
+            <label for="recipient-number">Enter Recipient's Number:</label>
+            <input type="tel" id="recipient-number" name="recipient-number" pattern="[0-9]{10}" maxlength="10" placeholder="Enter 10-digit number" required>
+
+            <button type="button" id="next-button">Next</button>
+        </form>
+
+        <div class="warning">
+            <h3>WARNING</h3>
+            <h6>Please provide two different phone numbers at "Alternative Receivers 1" and "Alternative Receivers 2." Your WhatsApp number also counts as an alternative receiver (if it's MTN), making four stated phone numbers in all.</h6>
+            <h6>Failure to provide different numbers as alternative receivers means you will not be refunded if the receiver does not qualify for Just4U offers.</h6>
+        </div>
+
+        <p>Before you proceed, go back and click on the red button labeled <a href="#">"VERIFY PHONE NUMBER"</a> to qualify for Just4U offers.</p>
+    </div>
+
+    <script>
+        document.getElementById('next-button').addEventListener('click', async function () {
+            const dataPlan = document.getElementById('data-plan').value;
+            const recipientNumber = document.getElementById('recipient-number').value;
+
+            // Validate inputs
+            if (!dataPlan) {
+                alert('Please select a data plan.');
+                return;
+            }
+
+            if (!recipientNumber.match(/^\d{10}$/)) {
+                alert('Please enter a valid 10-digit recipient number.');
+                return;
+            }
+
+            try {
+                const response = await fetch('http://localhost:3000/select-data-plan', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        dataPlan,
+                        recipientNumber,
+                    }),
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                   
+                    window.location.href = 'review.html';
+                } else {
+                    alert(result.message || 'Failed to select data plan.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred. Please try again.');
+            }
+        });
+    </script>
+
+</body>
+</html>
