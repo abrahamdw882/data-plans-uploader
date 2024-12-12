@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Selected Data Plans</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .plan-item {
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            background-color: #f9f9f9;
+        }
+        #selectedPlanDetails {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            background-color: #f0f0f0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Selected Data Plans</h1>
+    
+    <!-- Section for selected data plans -->
+    <h2>Selected Data Plans</h2>
+    <div id="plansContainer"></div>
+
+    <div id="selectedPlanDetails">
+        <h3>Selected Data Plan and Recipient Number</h3>
+        <p id="dataPlanDetail"></p>
+        <p id="recipientNumberDetail"></p>
+    </div>
+
+    <script>
+        
+        async function fetchDataPlans() {
+            try {
+                const response = await fetch('/get-selected-plans');
+                if (!response.ok) {
+                    throw new Error('Failed to fetch selected plans.');
+                }
+                const plans = await response.json();
+
+                const container = document.getElementById('plansContainer');
+                const selectedPlan = await fetchSelectedPlanDetails(); 
+
+                
+                plans.forEach(plan => {
+                    
+                    if (plan.dataPlan !== selectedPlan.dataPlan) {
+                        const item = document.createElement('div');
+                        item.className = 'plan-item';
+
+                        const dataPlan = document.createElement('p');
+                        dataPlan.textContent = `Data Plan: ${plan.dataPlan}`;
+
+                        const recipientNumber = document.createElement('p');
+                        recipientNumber.textContent = `Recipient Number: ${plan.recipientNumber}`;
+
+                        item.appendChild(dataPlan);
+                        item.appendChild(recipientNumber);
+                        container.appendChild(item);
+                    }
+                });
+            } catch (error) {
+                console.error('Error fetching data plans:', error);
+                alert(error.message);
+            }
+        }
+
+        
+        async function fetchSelectedPlanDetails() {
+            try {
+                const response = await fetch('/review-details');
+                if (!response.ok) {
+                    throw new Error('Failed to fetch selected plan details.');
+                }
+                const details = await response.json();
+
+               
+                const dataPlanDetail = document.getElementById('dataPlanDetail');
+                const recipientNumberDetail = document.getElementById('recipientNumberDetail');
+
+                dataPlanDetail.textContent = `Data Plan: ${details.dataPlan}`;
+                recipientNumberDetail.textContent = `Recipient Number: ${details.recipientNumber}`;
+
+               
+                return details;
+            } catch (error) {
+                console.error('Error fetching selected plan details:', error);
+                alert(error.message);
+            }
+        }
+
+       
+        window.onload = () => {
+            fetchDataPlans();
+        };
+    </script>
+</body>
+</html>
