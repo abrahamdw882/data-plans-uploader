@@ -2,6 +2,11 @@ const express = require('express');
 const sqlite3 = require('sqlite3').verbose(); 
 const path = require('path');
 const session = require('express-session');
+const cors = require('cors'); // Import CORS
+
+// Enable CORS for all origins (you can restrict it to specific domains as well)
+app.use(cors());
+
 
 const app = express();
 const PORT = 3000;
