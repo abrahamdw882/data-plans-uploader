@@ -2,20 +2,21 @@ const express = require('express');
 const sqlite3 = require('sqlite3').verbose(); 
 const path = require('path');
 const session = require('express-session');
-const cors = require('cors'); // Import CORS
+const cors = require('cors');
 
 const app = express();
 const PORT = 3000;
 
-
 const corsOptions = {
-  origin: 'https://data-plans-uploader.onrender.com', 
-  methods: ['GET', 'POST'], 
-  allowedHeaders: ['Content-Type'], 
+  origin: '*',
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type'],
+  preflightContinue: false,
+  optionsSuccessStatus: 204,
 };
 
-
 app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 
 const db = new sqlite3.Database('dataPlans.db', (err) => {
     if (err) {
@@ -37,7 +38,6 @@ const db = new sqlite3.Database('dataPlans.db', (err) => {
     }
 });
 
-
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(session({
@@ -46,9 +46,7 @@ app.use(session({
     saveUninitialized: true,
 }));
 
-
 app.use(express.static(path.join(__dirname, 'public')));
-
 
 app.post('/select-data-plan', (req, res) => {
     const { dataPlan, recipientNumber } = req.body;
@@ -69,7 +67,6 @@ app.post('/select-data-plan', (req, res) => {
     stmt.finalize();
 });
 
-
 app.get('/get-selected-plans', (req, res) => {
     db.all("SELECT * FROM plans", [], (err, rows) => {
         if (err) {
@@ -77,10 +74,9 @@ app.get('/get-selected-plans', (req, res) => {
             return res.status(500).json({ message: 'Failed to fetch data plans.' });
         }
 
-        res.status(200).json(rows); 
+        res.status(200).json(rows);
     });
 });
-
 
 app.get('/review-details', (req, res) => {
     db.get("SELECT * FROM plans ORDER BY id DESC LIMIT 1", [], (err, row) => {
@@ -100,7 +96,6 @@ app.get('/review-details', (req, res) => {
     });
 });
 
-
 app.get('/log-all-plans', (req, res) => {
     console.log('Fetching all data plans...'); 
 
@@ -110,17 +105,16 @@ app.get('/log-all-plans', (req, res) => {
             return res.status(500).json({ message: 'Failed to fetch data plans.' });
         }
 
-        console.log('All Data Plans:', rows); 
+        console.log('All Data Plans:', rows);
 
         if (rows.length === 0) {
             console.log('No data plans found in the database.');
         }
 
-        res.status(200).json(rows); 
+        res.status(200).json(rows);
     });
 });
 
-// Start the server
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
 });
